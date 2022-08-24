@@ -736,9 +736,10 @@
      * Play a sound or resume previous playback.
      * @param  {String/Number} sprite   Sprite name for sprite playback or sound id to continue previous.
      * @param  {Boolean} internal Internal Use: true prevents event firing.
+     * @param  {Number} volume Set an optional custom playback volume.
      * @return {Number}          Sound ID.
      */
-    play: function(sprite, internal) {
+    play: function(sprite, internal, volume = 1) {
       var self = this;
       var id = null;
 
@@ -859,7 +860,7 @@
           self._refreshBuffer(sound);
 
           // Setup the playback params.
-          var vol = (sound._muted || self._muted) ? 0 : sound._volume;
+          var vol = volume * ((sound._muted || self._muted) ? 0 : sound._volume);
           node.gain.setValueAtTime(vol, Howler.ctx.currentTime);
           sound._playStart = Howler.ctx.currentTime;
 
@@ -899,7 +900,7 @@
         var playHtml5 = function() {
           node.currentTime = seek;
           node.muted = sound._muted || self._muted || Howler._muted || node.muted;
-          node.volume = sound._volume * Howler.volume();
+          node.volume = volume * sound._volume * Howler.volume();
           node.playbackRate = sound._rate;
 
           // Some browsers will throw an error if this is called without user interaction.
